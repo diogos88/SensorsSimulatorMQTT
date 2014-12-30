@@ -1,4 +1,4 @@
 SensorsSimulatorMQTT
 ====================
 
-Simple application to simulate data read from one MQTT client
+Simple application to simulate data sent and read from a MQTT client.
