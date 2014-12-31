@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace SensorsSimulatorMQTT
+namespace diogos88.MQTT.SensorsSimulator
 {
    static class Program
    {

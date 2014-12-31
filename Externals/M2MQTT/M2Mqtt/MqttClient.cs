@@ -469,7 +469,7 @@ namespace uPLibrary.Networking.M2Mqtt
         /// <returns>Return code of CONNACK message from broker</returns>
         public byte Connect(string clientId)
         {
-            return this.Connect(clientId, null, null, false, MqttMsgConnect.QOS_LEVEL_AT_MOST_ONCE, false, null, null, true, MqttMsgConnect.KEEP_ALIVE_PERIOD_DEFAULT);
+             return this.Connect(clientId, null, null, false, MqttMsgConnect.QOS_LEVEL_AT_MOST_ONCE, false, null, null, true, MqttMsgConnect.KEEP_ALIVE_PERIOD_DEFAULT);
         }
 
         /// <summary>
@@ -528,7 +528,7 @@ namespace uPLibrary.Networking.M2Mqtt
             string willMessage,
             bool cleanSession,
             ushort keepAlivePeriod)
-        {
+         {
             // create CONNECT message
             MqttMsgConnect connect = new MqttMsgConnect(clientId,
                 username,

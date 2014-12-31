@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "M2Mqtt", "Externals\M2MQTT\
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Externals", "Externals", "{0A680F05-5A4D-46AA-A54D-84507DBD5A56}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Newtonsoft.Json", "Externals\Newtonsoft.Json\Src\Newtonsoft.Json\Newtonsoft.Json.csproj", "{EEEA67F9-9089-481D-A4DC-0966DEC9FD7D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,11 +25,16 @@ Global
 		{A11AEF5A-B246-4FE8-8330-06DB73CC8074}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A11AEF5A-B246-4FE8-8330-06DB73CC8074}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A11AEF5A-B246-4FE8-8330-06DB73CC8074}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EEEA67F9-9089-481D-A4DC-0966DEC9FD7D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EEEA67F9-9089-481D-A4DC-0966DEC9FD7D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EEEA67F9-9089-481D-A4DC-0966DEC9FD7D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EEEA67F9-9089-481D-A4DC-0966DEC9FD7D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{A11AEF5A-B246-4FE8-8330-06DB73CC8074} = {0A680F05-5A4D-46AA-A54D-84507DBD5A56}
+		{EEEA67F9-9089-481D-A4DC-0966DEC9FD7D} = {0A680F05-5A4D-46AA-A54D-84507DBD5A56}
 	EndGlobalSection
 EndGlobal
