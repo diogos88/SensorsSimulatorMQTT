@@ -53,6 +53,7 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
+    <Compile Include="MQTTMessage.cs" />
     <Compile Include="NumericTextbox.cs">
       <SubType>Component</SubType>
     </Compile>

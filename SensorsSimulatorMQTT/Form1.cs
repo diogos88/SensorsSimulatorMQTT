@@ -18,7 +18,7 @@ namespace diogos88.MQTT.SensorsSimulator
       private Settings m_Settings;
       private readonly Sensors m_Sensors;
       private readonly SensorsSettings m_SensorsSettings;
-      private readonly CircularBuffer<MqttMsgPublishEventArgs> m_Messages;
+      private readonly CircularBuffer<MQTTMessage> m_Messages;
       private MqttClient m_Client;
       private bool m_FillingControls;
       private Thread m_SenderThread;
@@ -40,7 +40,7 @@ namespace diogos88.MQTT.SensorsSimulator
          m_FillingControls = false;
          m_PropertiesToSend = new List<string>();
 
-         m_Messages = new CircularBuffer<MqttMsgPublishEventArgs>(NUMBER_ITEMS_DISPLAYED);
+         m_Messages = new CircularBuffer<MQTTMessage>(NUMBER_ITEMS_DISPLAYED);
          m_Messages.BufferContentChanged += BufferContentChangedHandler;
 
          m_TextFormat = TextFormat.JSON;
@@ -178,7 +178,7 @@ namespace diogos88.MQTT.SensorsSimulator
 
       private void MqttMsgPublishReceivedHandler(object sender, MqttMsgPublishEventArgs e)
       {
-         m_Messages.Add(e);
+         m_Messages.PushBack(new MQTTMessage(e,DateTime.Now));
       }
 
       private void LoadSettings()
@@ -534,11 +534,10 @@ namespace diogos88.MQTT.SensorsSimulator
       {
          var sb = new StringBuilder();
 
-         for (var i = 0; i < m_Messages.Count; i++)
+         foreach (var message in m_Messages)
          {
-            var e = m_Messages[i];
-            string value = Utilities.GetString(e.Message);
-            sb.Insert(0, String.Format("{0}  -  {1}\r\n", e.Topic, value));
+            string value = Utilities.GetString(message.MQTTEvent.Message);
+            sb.Insert(0, String.Format("{0:yyyy/MM/dd HH:mm:ss.fff}  -  {1}  -  {2}\r\n", message.Time, message.MQTTEvent.Topic, value));
          }
 
          SetText(sb.ToString());
