@@ -73,6 +73,7 @@
          this.PlainTextRadioButton = new System.Windows.Forms.RadioButton();
          this.JSONRadioButton = new System.Windows.Forms.RadioButton();
          this.XMLRadioButton = new System.Windows.Forms.RadioButton();
+         this.IndividualRadioButton = new System.Windows.Forms.RadioButton();
          this.TemperatureTextbox = new diogos88.MQTT.SensorsSimulator.NumericTextbox();
          this.PressureTextbox = new diogos88.MQTT.SensorsSimulator.NumericTextbox();
          this.LightTextbox = new diogos88.MQTT.SensorsSimulator.NumericTextbox();
@@ -166,7 +167,7 @@
          this.UVGroupBox.Size = new System.Drawing.Size(280, 45);
          this.UVGroupBox.TabIndex = 14;
          this.UVGroupBox.TabStop = false;
-         this.UVGroupBox.Text = "UV";
+         this.UVGroupBox.Text = "UVIndex";
          // 
          // UVComboBox
          // 
@@ -547,6 +548,7 @@
          // 
          // groupBox1
          // 
+         this.groupBox1.Controls.Add(this.IndividualRadioButton);
          this.groupBox1.Controls.Add(this.IntervalComboBox);
          this.groupBox1.Controls.Add(this.label1);
          this.groupBox1.Controls.Add(this.PlainTextRadioButton);
@@ -612,6 +614,17 @@
          this.XMLRadioButton.Text = "XML";
          this.XMLRadioButton.UseVisualStyleBackColor = true;
          this.XMLRadioButton.CheckedChanged += new System.EventHandler(this.XMLRadioButton_CheckedChanged);
+         // 
+         // IndividualRadioButton
+         // 
+         this.IndividualRadioButton.AutoSize = true;
+         this.IndividualRadioButton.Location = new System.Drawing.Point(196, 19);
+         this.IndividualRadioButton.Name = "IndividualRadioButton";
+         this.IndividualRadioButton.Size = new System.Drawing.Size(70, 17);
+         this.IndividualRadioButton.TabIndex = 5;
+         this.IndividualRadioButton.Text = "Individual";
+         this.IndividualRadioButton.UseVisualStyleBackColor = true;
+         this.IndividualRadioButton.CheckedChanged += new System.EventHandler(this.IndividualRadioButton_CheckedChanged);
          // 
          // TemperatureTextbox
          // 
@@ -807,6 +820,7 @@
       private NumericTextbox LPGTextbox;
       private System.Windows.Forms.Label label2;
       private System.Windows.Forms.RichTextBox SubscriptionRichTextBox;
+      private System.Windows.Forms.RadioButton IndividualRadioButton;
    }
 }
 

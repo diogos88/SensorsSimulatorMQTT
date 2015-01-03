@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Xml.Serialization;
 
@@ -101,16 +104,26 @@ namespace diogos88.MQTT.SensorsSimulator
 
       public static byte[] GetBytes(string str)
       {
-         var bytes = new byte[str.Length * sizeof(char)];
-         Buffer.BlockCopy(str.ToCharArray(), 0, bytes, 0, bytes.Length);
-         return bytes;
+         //var bytes = new byte[str.Length * sizeof(char)];
+         //Buffer.BlockCopy(str.ToCharArray(), 0, bytes, 0, bytes.Length);
+         //return bytes;
+
+         return System.Text.Encoding.UTF8.GetBytes(str);
       }
 
-      public static string GetString(byte[] bytes)
+      public static string GetString(byte[] data)
       {
-         var chars = new char[bytes.Length / sizeof(char)];
-         Buffer.BlockCopy(bytes, 0, chars, 0, bytes.Length);
-         return new string(chars);
+         //var chars = new char[data.Length / sizeof(char)];
+         //Buffer.BlockCopy(data, 0, chars, 0, data.Length);
+         //return new string(chars);
+
+         return System.Text.Encoding.UTF8.GetString(data);
+      }
+
+      public static List<string> GetConstants(Type type)
+      {
+         var fieldInfos = type.GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy).Where(fi => fi.IsLiteral && !fi.IsInitOnly).ToList();
+         return fieldInfos.Select(fieldinfo => fieldinfo.GetRawConstantValue().ToString()).ToList();
       }
    }
 }

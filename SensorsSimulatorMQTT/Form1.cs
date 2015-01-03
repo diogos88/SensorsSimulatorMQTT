@@ -13,7 +13,7 @@ namespace diogos88.MQTT.SensorsSimulator
    public partial class Form1 : Form
    {
       private const string SETTINGS_FILENAME = "settings.cfg";
-      private const int NUMBER_ITEMS_DISPLAYED = 1;
+      private const int NUMBER_ITEMS_DISPLAYED = 15;
 
       private Settings m_Settings;
       private readonly Sensors m_Sensors;
@@ -62,46 +62,46 @@ namespace diogos88.MQTT.SensorsSimulator
             var ignore = true;
             switch (propertyInfo.Name)
             {
-               case "DoorWindow":
+               case Sensors.DOOR_WINDOW:
                   ignore = !m_SensorsSettings.DoorWindowEnabled;
                   break;
-               case "Dimmer":
+               case Sensors.DIMMER:
                   ignore = !m_SensorsSettings.DimmerEnabled;
                   break;
-               case "Distance":
+               case Sensors.DISTANCE:
                   ignore = !m_SensorsSettings.DistanceEnabled;
                   break;
-               case "Dust":
+               case Sensors.DUST:
                   ignore = !m_SensorsSettings.DustEnabled;
                   break;
-               case "GasLPG":
+               case Sensors.GAS_LPG:
                   ignore = !m_SensorsSettings.GasEnabled;
                   break;
-               case "GasCO2":
+               case Sensors.GAS_CO2:
                   ignore = !m_SensorsSettings.GasEnabled;
                   break;
-               case "GasSmoke":
+               case Sensors.GAS_SMOKE:
                   ignore = !m_SensorsSettings.GasEnabled;
                   break;
-               case "Humidity":
+               case Sensors.HUMIDITY:
                   ignore = !m_SensorsSettings.HumidityEnabled;
                   break;
-               case "Light":
+               case Sensors.LIGHT:
                   ignore = !m_SensorsSettings.LightEnabled;
                   break;
-               case "Motion":
+               case Sensors.MOTION:
                   ignore = !m_SensorsSettings.MotionEnabled;
                   break;
-               case "Pressure":
+               case Sensors.PRESSURE:
                   ignore = !m_SensorsSettings.PressureEnabled;
                   break;
-               case "RainMoisture":
+               case Sensors.RAIN_MOISTURE:
                   ignore = !m_SensorsSettings.RainMoistureEnabled;
                   break;
-               case "Temperature":
+               case Sensors.TEMPERATURE:
                   ignore = !m_SensorsSettings.TemperatureEnabled;
                   break;
-               case "UV":
+               case Sensors.UV:
                   ignore = !m_SensorsSettings.UVEnabled;
                   break;
             }
@@ -153,7 +153,18 @@ namespace diogos88.MQTT.SensorsSimulator
 
             m_Client.MqttMsgPublishReceived += MqttMsgPublishReceivedHandler;
 
-            m_Client.Subscribe(new[] { m_Settings.Topic }, new[] { MqttMsgBase.QOS_LEVEL_AT_MOST_ONCE });
+            var sensors = Utilities.GetConstants(typeof (Sensors));
+            var topics = new string[sensors.Count+1];
+            var qosLevels = new byte[sensors.Count+1];
+
+            topics[0] = m_Settings.Topic;
+            qosLevels[0] = MqttMsgBase.QOS_LEVEL_AT_MOST_ONCE;
+            for (int i=0; i< sensors.Count; i++)
+            {
+               topics[i+1] = m_Settings.Topic + "/" + sensors[i].ToLower();
+               qosLevels[i+1] = MqttMsgBase.QOS_LEVEL_AT_MOST_ONCE;
+            }
+            m_Client.Subscribe(topics, qosLevels);
          }
          catch
          {
@@ -216,7 +227,7 @@ namespace diogos88.MQTT.SensorsSimulator
 
          foreach (var value in SensorsSettings.UV_INDEXES)
             UVComboBox.Items.Add(value);
-         UVComboBox.SelectedIndex = m_Sensors.UV;
+         UVComboBox.SelectedIndex = m_Sensors.UVIndex;
 
          IntervalComboBox.Items.AddRange(new[] { "50", "100", "250", "500", "1000", "2500", "5000", "10000", "30000", "60000" });
          IntervalComboBox.SelectedIndex = 4;
@@ -488,7 +499,7 @@ namespace diogos88.MQTT.SensorsSimulator
          {
             m_FillingControls = true;
 
-            m_Sensors.UV = UVComboBox.SelectedIndex;
+            m_Sensors.UVIndex = UVComboBox.SelectedIndex;
 
             m_FillingControls = false;
          }
@@ -507,6 +518,11 @@ namespace diogos88.MQTT.SensorsSimulator
       private void PlainTextRadioButton_CheckedChanged(object sender, EventArgs e)
       {
          m_TextFormat = TextFormat.Plain;
+      }
+
+      private void IndividualRadioButton_CheckedChanged(object sender, EventArgs e)
+      {
+         m_TextFormat = TextFormat.Individual;
       }
 
       private void IntervalComboBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -554,6 +570,7 @@ namespace diogos88.MQTT.SensorsSimulator
                      data = Utilities.ToXML(m_Sensors, m_XmlAttributeOverrides);
                      break;
                   case TextFormat.Plain:
+                  case TextFormat.Individual:
                      data = GetPlainText();
                      break;
                   default:
@@ -561,7 +578,25 @@ namespace diogos88.MQTT.SensorsSimulator
                }
 
                if (m_Client != null && m_Client.IsConnected)
-                  m_Client.Publish(m_Settings.Topic, Utilities.GetBytes(data), MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE, false);
+               {
+                  if (m_TextFormat == TextFormat.Individual)
+                  {
+                     var labels = data.Split(' ');
+                     foreach (var label in labels)
+                     {
+                        if (label.Equals(""))
+                           continue;
+
+                        var parts = label.Split('=');
+                        string topic = m_Settings.Topic + "/" + parts[0].ToLower();
+                        m_Client.Publish(topic, Utilities.GetBytes(parts[1]), MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE, false);
+                     }
+                  }
+                  else
+                  {
+                     m_Client.Publish(m_Settings.Topic, Utilities.GetBytes(data), MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE, false);
+                  }
+               }
 
                Thread.Sleep(m_Interval);
             }
@@ -576,61 +611,61 @@ namespace diogos88.MQTT.SensorsSimulator
          {
             switch (propertieName)
             {
-               case "DoorWindow":
+               case Sensors.DOOR_WINDOW :
                   if (m_SensorsSettings.DoorWindowEnabled)
-                     sb.Append("DoorWindow=" + m_Sensors.DoorWindow + " ");
+                     sb.Append(Sensors.DOOR_WINDOW + "=" + m_Sensors.DoorWindow + " ");
                   break;
-               case "Dimmer":
+               case Sensors.DIMMER:
                   if (m_SensorsSettings.DimmerEnabled)
-                     sb.Append("Dimmer=" + m_Sensors.Dimmer + " ");
+                     sb.Append(Sensors.DIMMER + "=" + m_Sensors.Dimmer + " ");
                   break;
-               case "Distance":
+               case Sensors.DISTANCE:
                   if (m_SensorsSettings.DistanceEnabled)
-                     sb.Append("Distance=" + m_Sensors.Distance + " ");
+                     sb.Append(Sensors.DISTANCE + "=" + m_Sensors.Distance + " ");
                   break;
-               case "Dust":
+               case Sensors.DUST:
                   if (m_SensorsSettings.DustEnabled)
-                     sb.Append("Dust=" + m_Sensors.Dust + " ");
+                     sb.Append(Sensors.DUST + "=" + m_Sensors.Dust + " ");
                   break;
-               case "GasLPG":
+               case Sensors.GAS_LPG:
                   if (m_SensorsSettings.GasEnabled)
-                     sb.Append("GasLPG=" + m_Sensors.GasLPG + " ");
+                     sb.Append(Sensors.GAS_LPG + "=" + m_Sensors.GasLPG + " ");
                   break;
-               case "GasCO2":
+               case Sensors.GAS_CO2:
                   if (m_SensorsSettings.GasEnabled)
-                     sb.Append("GasCO2=" + m_Sensors.GasCO2 + " ");
+                     sb.Append(Sensors.GAS_CO2 + "=" + m_Sensors.GasCO2 + " ");
                   break;
-               case "GasSmoke":
+               case Sensors.GAS_SMOKE:
                   if (m_SensorsSettings.GasEnabled)
-                     sb.Append("GasSmoke=" + m_Sensors.GasSmoke + " ");
+                     sb.Append(Sensors.GAS_SMOKE + "=" + m_Sensors.GasSmoke + " ");
                   break;
-               case "Humidity":
+               case Sensors.HUMIDITY:
                   if (m_SensorsSettings.HumidityEnabled)
-                     sb.Append("Humidity=" + m_Sensors.Humidity + " ");
+                     sb.Append(Sensors.HUMIDITY + "=" + m_Sensors.Humidity + " ");
                   break;
-               case "Light":
+               case Sensors.LIGHT:
                   if (m_SensorsSettings.LightEnabled)
-                     sb.Append("Light=" + m_Sensors.Light + " ");
+                     sb.Append(Sensors.LIGHT + "=" + m_Sensors.Light + " ");
                   break;
-               case "Motion":
+               case Sensors.MOTION:
                   if (m_SensorsSettings.MotionEnabled)
-                     sb.Append("Motion=" + m_Sensors.Motion + " ");
+                     sb.Append(Sensors.MOTION + "=" + m_Sensors.Motion + " ");
                   break;
-               case "Pressure":
+               case Sensors.PRESSURE:
                   if (m_SensorsSettings.PressureEnabled)
-                     sb.Append("Pressure=" + m_Sensors.Pressure + " ");
+                     sb.Append(Sensors.PRESSURE + "=" + m_Sensors.Pressure + " ");
                   break;
-               case "RainMoisture":
+               case Sensors.RAIN_MOISTURE:
                   if (m_SensorsSettings.RainMoistureEnabled)
-                     sb.Append("RainMoisture=" + m_Sensors.RainMoisture + " ");
+                     sb.Append(Sensors.RAIN_MOISTURE + "=" + m_Sensors.RainMoisture + " ");
                   break;
-               case "Temperature":
+               case Sensors.TEMPERATURE:
                   if (m_SensorsSettings.TemperatureEnabled)
-                     sb.Append("Temperature=" + m_Sensors.Temperature + " ");
+                     sb.Append(Sensors.TEMPERATURE + "=" + m_Sensors.Temperature + " ");
                   break;
-               case "UV":
+               case Sensors.UV:
                   if (m_SensorsSettings.UVEnabled)
-                     sb.Append("UV=" + m_Sensors.UV + " ");
+                     sb.Append(Sensors.UV + "=" + m_Sensors.UVIndex + " ");
                   break;
             }
          }

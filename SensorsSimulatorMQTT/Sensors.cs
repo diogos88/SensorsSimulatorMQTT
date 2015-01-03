@@ -5,6 +5,21 @@ namespace diogos88.MQTT.SensorsSimulator
    [Serializable]
    public class Sensors
    {
+      public const string DOOR_WINDOW = "DoorWindow";
+      public const string DIMMER = "Dimmer";
+      public const string DISTANCE = "Distance";
+      public const string DUST = "Dust";
+      public const string GAS_LPG = "GasLPG";
+      public const string GAS_CO2 = "GasCO2";
+      public const string GAS_SMOKE = "GasSmoke";
+      public const string HUMIDITY = "Humidity";
+      public const string LIGHT = "Light";
+      public const string MOTION = "Motion";
+      public const string PRESSURE = "Pressure";
+      public const string RAIN_MOISTURE = "RainMoisture";
+      public const string TEMPERATURE = "Temperature";
+      public const string UV = "UVIndex";
+
       /// <summary>
       /// Door / Windows / Button
       /// Range: LOW-HIGH
@@ -72,10 +87,10 @@ namespace diogos88.MQTT.SensorsSimulator
       /// </summary>
       public float Temperature { get; set; }
       /// <summary>
-      /// UV sensor
+      /// UVIndex sensor
       /// Range: 0-12
       /// </summary>
-      public int UV { get; set; }
+      public int UVIndex { get; set; }
 
       public Sensors()
       {
@@ -92,7 +107,7 @@ namespace diogos88.MQTT.SensorsSimulator
          Pressure = 100;
          RainMoisture = true;
          Temperature = 20.0f;
-         UV = 0;
+         UVIndex = 0;
       }
    }
 }

@@ -4,6 +4,7 @@
    {
       JSON,
       XML,
-      Plain
+      Plain,
+      Individual
    }
 }
